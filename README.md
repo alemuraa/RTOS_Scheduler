@@ -1,68 +1,92 @@
-# RTOS _assignment
+# RTOS Assignment
 
 ## Description
-1. Design an application with 3 threads J1, J2, J3, whose periods are 300ms, 500ms, and 800ms, plus an aperiodic thread J4 in background which is triggered by J2.
 
-2. The threads shall just "waste time," as we did in the exercise with threads.
+1. **Thread Design**
+   - Create an application with three periodic threads:
+     - **J1:** 300ms period
+     - **J2:** 500ms period
+     - **J3:** 800ms period
+   - Include an aperiodic thread **J4**, triggered by **J2**.
 
-3. Design a simple driver with only open, close, and write system calls.
+2. **Thread Functionality**
+   - Each thread will perform operations that "waste time" similar to previous exercises.
 
-4. During its execution, every task 
+3. **Driver Design**
+   - Develop a simple driver with `open`, `close`, and `write` system calls.
 
-	1. opens the special file associated with the driver;
+4. **Task Execution**
+   - Each thread will:
+     1. Open the special file associated with the driver.
+     2. Write its identifier followed by an opening square bracket (e.g., `[1`, `[2`, `[3`, `[4`).
+     3. Close the special file.
+     4. Perform operations (i.e., waste time).
+     5. Repeat steps 1-3, but write the identifier with a closing square bracket (e.g., `1]`, `2]`, `3]`, `4]`).
 
-	2. writes to the driver its identifier plus open square brackets (i.e., [1, [2, [3, or [4)
+5. **Kernel Log Output**
+   - The `write` system call logs the string received from the thread. A typical log output might be `[11][2[11]2][3[11]3][4]`, showing thread preemption. Adjust computational times if necessary to observe preemption.
 
-	3. close the special files
-
-	4. performs operations (i.e., wasting time)
-
-	5. performs 1,2 and 3 again to write to the driver its identifier, but with closed square brackets (i.e., 1], 2], 3] or 4]).
-
-5. The write system call writes on the kernel log the string received from the thread. A typical output of the system, when reading the kernel log, can be the following [11][2[11]2][3[11]3][4]. This sequence clearly shows that some threads can be preempted by other threads (if this does not happen, try to increase the computational time of longer tasks).
-
-6. Finally, modify the code of all tasks to use semaphores. Every thread now protects all its operations (i) to (v) with a semaphore, which prevents other tasks from preempting. Specifically, use semaphores with a priority ceiling access protocol.
-
-
-## How to run
-In order to be sure to be superuser, we have to open a terminal and type:
-
-$ sudo su
-
-Subsequently, we have to compile the kernel module using the Makefile (inside RTOS_Assignment1):
-
-$ make
-
-Then we install the module:
-
-$ insmod my_module.ko
-
-To check if it was correctly installed:
-
-$ /sbin/lsmod
-
-and check if there is a modelude called 'simple':
-
-check the major number that has been assigned:
-
-$ cat /proc/devices
-
-create a special device file with the proper <major> number that has been automatically assigned and minor number = 0
-
-$ mknod /dev/simple c <majorn> 0
-
-Finally, we have to compile:
-
-$ gcc -lpthread assignment.c -o assignment
+6. **Semaphore Protection**
+   - Update all tasks to use semaphores. Protect operations (steps 1-5) with semaphores to prevent preemption. Implement semaphores with a priority ceiling access protocol.
 
 
-and run it with:
 
-$ ./simple
 
-To read the kernel log, use the command:
+## How to Run
 
-$ dmesg
+1. **Gain Superuser Access**
+   Open a terminal and switch to superuser mode:
+   ```bash
+   $ sudo su
+   ```
+2. **Compile the Kernel Module**
+Navigate to the `RTOS_Assignment1` directory and compile the kernel module using the Makefile:
+ ```bash
+   $ make
+   ```
+3. **Install the Kernel Module**
+Install the compiled module into the kernel:
+```bash
+   $ insmod my_module.ko
+   ```
+4. **Verify Module Installation**
+Check if the module was installed correctly:
+```bash
+   $ /sbin/lsmod
+   ```
+Ensure that the module named simple appears in the list.
+
+5. **Check Major Device Number**
+Find the major number assigned to the module:
+```bash
+   $ cat /proc/devices
+   ```
+6. **Create the Device File**
+Create a special device file with the appropriate major number (replace `<major_number>` with the number found in the previous step):
+```bash
+   $ mknod /dev/simple c <major_number> 0
+   ```
+7. **Compile the User Program**
+Compile the user-space program that interacts with the kernel module:
+```bash
+   $ gcc -lpthread assignment.c -o assignment
+   ```
+8. **Run the User Program**
+Execute the compiled program:
+```bash
+   $ ./assignment
+   ```
+9. **View Kernel Log**
+To check the kernel log for output from the driver, use:
+```bash
+   $ dmesg
+   ```
+
+
+
+
+
+
 
 
 
